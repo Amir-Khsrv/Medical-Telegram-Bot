@@ -104,10 +104,11 @@ def webhook():
     return "OK"
 
 # Main function
-async def main():
+async def main():   
     # Set the webhook URL (replace '<your-render-url>' with your actual URL)
-    webhook_url = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
+    webhook_url = "https://medical-telegram-bot-2.onrender.com/webhook/7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
     await application.bot.set_webhook(url=webhook_url)
+
 
 if __name__ == '__main__':
     # Run the bot in the background
