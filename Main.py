@@ -102,6 +102,18 @@ def webhook():
         application.process_update(update)  # Process the update
     return "OK"
 
+# Register conversation handler
+conv_handler = ConversationHandler(
+    entry_points=[CommandHandler('start', start)],
+    states={
+        ASK_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, ask_name)],
+        CHOOSE_SPECIALTY: [MessageHandler(filters.TEXT & ~filters.COMMAND, choose_specialty)],
+    },
+    fallbacks=[CommandHandler('cancel', cancel)],
+)
+
+application.add_handler(conv_handler)
+
 # Main function
 async def main():   
     # Set the webhook URL (replace '<your-render-url>' with your actual URL)
