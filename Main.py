@@ -1,7 +1,7 @@
 import json
 import os
 from flask import Flask, request
-from flask_asgi import FlaskASGI
+from daphne.server import Server
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
     Application,
@@ -75,7 +75,6 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 # Flask app and Telegram bot application
 app = Flask(__name__)
-app_asgi = FlaskASGI(app)
 TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
 WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
 
@@ -107,7 +106,7 @@ def webhook():
         print("Incoming update:", data)  # Log incoming data for debugging
         if data:
             update = Update.de_json(data, application.bot)  # Deserialize data
-            await application.process_update(update)   # Fixing the warning
+            asyncio.run(application.process_update(update))   # Fixing the warning
         return "OK", 200  # Return a successful HTTP status code
     except Exception as e:
         print("Error in webhook:", e)  # Log the error
