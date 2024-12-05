@@ -7,6 +7,12 @@ import os
 # Define states for the conversation
 ASK_NAME, CHOOSE_SPECIALTY = range(2)
 
+TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
+try : 
+    
+    application = Application.builder().token(TOKEN).build()
+except Exception as e : 
+    print("Error Lil bro " , e)
 # Function to save user data
 def save_user_data(user_id, name, username, specialty):
     os.makedirs('data', exist_ok=True)
@@ -67,15 +73,11 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 # Initialize the FastAPI app
 app = FastAPI()
-TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
+
 WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
 
 # Initialize the Telegram bot application
-try : 
-    
-    application = Application.builder().token(TOKEN).build()
-except Exception as e : 
-    print("Error Lil bro " , e)
+
 
 # Conversation handler
 conv_handler = ConversationHandler(
