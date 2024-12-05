@@ -15,7 +15,7 @@ from telegram.ext import (
 import asyncio
 # Define states for the conversation
 ASK_NAME, CHOOSE_SPECIALTY = range(2)
-
+TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
 # Function to save user data
 def save_user_data(user_id, name, username, specialty):
     os.makedirs('data', exist_ok=True)
@@ -76,14 +76,11 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 # Flask app and Telegram bot application
 app = FastAPI()
-TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
+
 WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
 
-application = (
-    Application.builder()
-    .token(TOKEN)
-    .build()
-)
+application = Application.builder().token(TOKEN).build()
+
 class UpdateData(BaseModel):
     update_id: int
     message: dict
