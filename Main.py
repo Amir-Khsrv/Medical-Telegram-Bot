@@ -1,6 +1,6 @@
 import json
 import os
-from fastapi import FastAPI , Request
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from daphne.server import Server
 from telegram import Update, ReplyKeyboardMarkup
@@ -103,8 +103,8 @@ async def home(request: Request):  # <-- Add 'request' argument here
     # Your logic here
     return {"message": "Bot Is Runniiiiiiiiiiiiiiing"}
 
-@app.route(f"/webhook/{TOKEN}", methods=['POST'])
-async def webhook(token: str, request: Request):
+@app.post(f"/webhook/{TOKEN}")
+async def webhook(request: Request, webhook_id: str):
     try:
         data = await request.json()  # Get JSON data
         print("Incoming update:", data)  # Log incoming data for debugging
