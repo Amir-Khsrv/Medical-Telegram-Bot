@@ -122,8 +122,7 @@ async def webhook(request: Request):
 # Initialize the bot
 
 
-# Initialize bot before running Flask app
-initialize_bot()
+
 
 # Start Flask app
 if __name__ == "__main__":
