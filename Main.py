@@ -104,7 +104,7 @@ async def home(request: Request):  # <-- Add 'request' argument here
     return {"message": "Bot Is Runniiiiiiiiiiiiiiing"}
 
 @app.post(f"/webhook/{TOKEN}")
-async def webhook(request: Request, webhook_id: str):
+async def webhook(request: Request):
     try:
         data = await request.json()  # Get JSON data
         print("Incoming update:", data)  # Log incoming data for debugging
