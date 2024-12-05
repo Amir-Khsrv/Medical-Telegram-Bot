@@ -100,11 +100,16 @@ def home():
 
 @app.route(f"/webhook/{TOKEN}", methods=['POST'])
 def webhook():
-    data = request.get_json()
-    if data:
-        update = Update.de_json(data, application.bot)
-        application.update_queue.put_nowait(update)
-    return "OK"
+    try:
+        data = request.get_json()  # Get JSON data
+        print("Incoming update:", data)  # Log incoming data for debugging
+        if data:
+            update = Update.de_json(data, application.bot)  # Deserialize data
+            application.process_update(update)  # Process the update
+        return "OK", 200  # Return a successful HTTP status code
+    except Exception as e:
+        print("Error in webhook:", e)  # Log the error
+        return "Internal Server Error", 500  # Return error HTTP status code
 
 # Initialize the bot
 def initialize_bot():
