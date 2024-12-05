@@ -71,7 +71,11 @@ TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
 WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
 
 # Initialize the Telegram bot application
-application = Application.builder().token(TOKEN).build()
+try : 
+    
+    application = Application.builder().token(TOKEN).build()
+except Exception as e : 
+    print("Error Lil bro " , e)
 
 # Conversation handler
 conv_handler = ConversationHandler(
