@@ -86,8 +86,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 # Flask app for webhook
 app = Flask(__name__)
-TOKEN = "7248777740:AAFm2tNqMibOeXz48I4ICyE8OEJgWt5v_9s"
-WEBHOOK_PATH = f"/webhook/7248777740:AAFm2tNqMibOeXz48I4ICyE8OEJgWt5v_9s"
+TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
+WEBHOOK_PATH = f"/webhook/7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
 application = Application.builder().token(TOKEN).build()
 
 @app.route('/')
