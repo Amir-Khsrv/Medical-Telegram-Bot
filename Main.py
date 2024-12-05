@@ -101,6 +101,7 @@ app = Flask(__name__)
 def telegram_webhook():
     try:
         data = request.get_json()
+        logger.info(f"Received update: {data}")
         if data:
             update = Update.de_json(data, application.bot)
             application.update_queue.put_nowait(update)
@@ -108,7 +109,7 @@ def telegram_webhook():
     except Exception as e:
         logger.error(f"Error processing update: {e}")
         return jsonify({"ok": False, "error": str(e)}), 500
-
+        
 @app.route("/", methods=["GET"])
 def home():
     return jsonify({"message": "Bot is running"}), 200
