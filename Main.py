@@ -26,7 +26,7 @@ def save_user_data(user_id, name, username, specialty):
         "username": username,
         "specialty": specialty
     }
-    
+
     try:
         with open(file_path, 'r') as file:
             users = json.load(file)
@@ -34,7 +34,7 @@ def save_user_data(user_id, name, username, specialty):
         users = []
 
     users.append(data)
-    
+
     with open(file_path, 'w') as file:
         json.dump(users, file, indent=4)
 
@@ -60,7 +60,7 @@ async def ask_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         'Dermatology', 'Psychiatry', 'General Surgery', 'Obstetrics and Gynecology',
         'Radiology', 'Pathology', 'Emergency Medicine', 'Anesthesia', 'Physical Examination'
     ]
-    
+
     reply_keyboard = [specialty_list[i:i + 3] for i in range(0, len(specialty_list), 3)]
     await update.message.reply_text(
         f"Hi {user_name}! Please choose a specialty from the list below: 👇",
