@@ -96,11 +96,11 @@ def home():
     return "Bot is running!"
 
 @app.route(WEBHOOK_PATH, methods=['POST'])
-def webhook():
-    data = request.get_json()
+async def webhook():
+    data = await request.get_json()  # async call to get json
     if data:
         update = Update.de_json(data, application.bot)
-        application.process_update(update)
+        await application.process_update(update)  # Await the async function
     return "OK"
 
 # Main function
