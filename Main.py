@@ -16,6 +16,9 @@ from telegram.ext import (
 ASK_NAME, CHOOSE_SPECIALTY = range(2)
 TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
 
+# Initialize the Application object
+application = Application.builder().token(TOKEN).build()
+
 # Function to save user data
 def save_user_data(user_id, name, username, specialty):
     os.makedirs('data', exist_ok=True)
@@ -79,9 +82,6 @@ app = FastAPI()
 
 WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
 
-# Initialize the Application object and set the webhook inside the handler
-application = Application.builder().token(TOKEN).build()
-
 # Conversation handler
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler('start', start)],
@@ -97,26 +97,28 @@ application.add_handler(conv_handler)
 async def home(request: Request):
     return {"message": "Bot Is Running"}
 
-# Modify this section to handle the webhook properly
+# Webhook endpoint
 @app.post(f"/webhook/{TOKEN}")
-async def webhook(request: Request):
-    try:
-        data = await request.json()  # Get JSON data
-        print("Incoming update:", data)  # Log incoming data for debugging
+async def webhook(token: str, request: Request):
+    if token != TOKEN:
+        return {"error": "Invalid token"}
 
-        if data:
-            update = Update.de_json(data, application.bot)  # Deserialize data
-            await application.process_update(update)  # Process the update using the application context
+    data = await request.json()
+    update = Update.de_json(data, application.bot)
+    await application.process_update(update)
+    return {"status": "ok"}
 
-        return {"status": "ok"}, 200  # Return a successful HTTP status code
-
-
-    except Exception as e:
-        print("Error in webhook:", e)  # Log the error
-        return {"error": "Internal Server Error"}, 500  # Return error HTTP status code
-
+# Set the webhook for the bot
+async def set_webhook():
+    webhook_url = f"https://your-domain.com/webhook/{TOKEN}"
+    application.bot.set_webhook(url=webhook_url)
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    import asyncio
 
+    # Set the webhook before running the app
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(set_webhook())  # Initialize webhook
+
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
