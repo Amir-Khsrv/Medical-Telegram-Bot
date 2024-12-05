@@ -10,6 +10,7 @@ from telegram.ext import (
     ConversationHandler,
     ContextTypes,
 )
+from asgiref.sync import async_to_sync
 
 # Define states for the conversation
 ASK_NAME, CHOOSE_SPECIALTY = range(2)
@@ -96,11 +97,16 @@ def home():
 
 @app.route(WEBHOOK_PATH, methods=['POST'])
 def webhook():
-    data = request.get_json()  # Flask call to get json
-    if data:
-        update = Update.de_json(data, application.bot)
-        application.process_update(update)  # Process the update
-    return "OK"
+    try:
+        data = request.get_json()  # Get JSON data
+        print("Incoming update:", data)  # Debugging: log incoming data
+        if data:
+            update = Update.de_json(data, application.bot)  # Deserialize update
+            async_to_sync(application.process_update)(update)  # Process update
+        return "OK", 200  # Successful HTTP response
+    except Exception as e:
+        print("Error in webhook:", e)  # Log errors
+        return "Internal Server Error", 500  # Return error status
 
 # Register conversation handler
 conv_handler = ConversationHandler(
@@ -115,15 +121,15 @@ conv_handler = ConversationHandler(
 application.add_handler(conv_handler)
 
 # Main function
-async def main():   
+async def main():
     # Set the webhook URL (replace '<your-render-url>' with your actual URL)
-    webhook_url = "https://medical-telegram-bot-2.onrender.com/webhook/7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
+    webhook_url = "https://medical-telegram-bot-2.onrender.com" + WEBHOOK_PATH
     await application.bot.set_webhook(url=webhook_url)
+    print(f"Webhook set to: {webhook_url}")
 
 if __name__ == '__main__':
-    # Run the bot in the background
-    loop = asyncio.get_event_loop()
-    loop.create_task(main())
+    import asyncio
 
-    # Start Flask app (runs on port 5000)
+    # Start the main asyncio loop and Flask app
+    asyncio.run(main())
     app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
