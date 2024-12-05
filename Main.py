@@ -86,8 +86,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 # Flask app for webhook
 app = Flask(__name__)
-TOKEN = "YOUR_BOT_TOKEN"
-WEBHOOK_PATH = f"/webhook/{TOKEN}"
+TOKEN = "7248777740:AAFm2tNqMibOeXz48I4ICyE8OEJgWt5v_9s"
+WEBHOOK_PATH = f"/webhook/7248777740:AAFm2tNqMibOeXz48I4ICyE8OEJgWt5v_9s"
 application = Application.builder().token(TOKEN).build()
 
 @app.route('/')
@@ -105,7 +105,7 @@ def webhook():
 # Main function
 def main():
     # Set the webhook URL
-    webhook_url = f"https://your-render-url.com{WEBHOOK_PATH}"
+    webhook_url = f"https://<your-render-url>.onrender.com/webhook"
     application.bot.set_webhook(url=webhook_url)
 
 if __name__ == '__main__':
