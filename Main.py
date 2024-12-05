@@ -1,7 +1,6 @@
 import json
 import os
-import asyncio
-from quart import Quart, request
+from flask import Flask, request
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
     Application,
@@ -85,22 +84,22 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text("Goodbye! 👋 Stay healthy! 🩺")
     return ConversationHandler.END
 
-# Quart app for webhook
-app = Quart(__name__)
+# Flask app for webhook
+app = Flask(__name__)
 TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
 WEBHOOK_PATH = f"/webhook/{TOKEN}"
 application = Application.builder().token(TOKEN).build()
 
 @app.route('/')
-async def home():
+def home():
     return "Bot is running!"
 
 @app.route(WEBHOOK_PATH, methods=['POST'])
-async def webhook():
-    data = await request.get_json()  # async call to get json
+def webhook():
+    data = request.get_json()  # Flask call to get json
     if data:
         update = Update.de_json(data, application.bot)
-        await application.process_update(update)  # Await the async function
+        application.process_update(update)  # Process the update
     return "OK"
 
 # Main function
@@ -114,6 +113,5 @@ if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     loop.create_task(main())
 
-    # Start Quart app (runs on port 5000)
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    # Start Flask app (runs on port 5000)
+    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
