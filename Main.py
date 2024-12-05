@@ -79,15 +79,8 @@ app = FastAPI()
 
 WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
 
-# Initialize the Application object and set the webhook
+# Initialize the Application object and set the webhook inside the handler
 application = Application.builder().token(TOKEN).build()
-
-# Setting webhook inside the initialization function
-application.bot.set_webhook(WEBHOOK_URL)
-
-class UpdateData(BaseModel):
-    update_id: int
-    message: dict
 
 # Conversation handler
 conv_handler = ConversationHandler(
@@ -104,6 +97,7 @@ application.add_handler(conv_handler)
 async def home(request: Request):
     return {"message": "Bot Is Running"}
 
+# Modify this section to handle the webhook properly
 @app.post(f"/webhook/{TOKEN}")
 async def webhook(request: Request):
     try:
@@ -118,5 +112,4 @@ async def webhook(request: Request):
     except Exception as e:
         print("Error in webhook:", e)  # Log the error
         return {"error": "Internal Server Error"}, 500  # Return error HTTP status code
-
 
