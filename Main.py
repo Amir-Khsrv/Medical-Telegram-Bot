@@ -74,8 +74,8 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 # Flask app and Telegram bot application
 app = Flask(__name__)
-TOKEN = "YOUR_BOT_TOKEN"
-WEBHOOK_URL = f"https://your-render-url.onrender.com/webhook/{TOKEN}"
+TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
+WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
 
 application = (
     Application.builder()
@@ -107,9 +107,12 @@ def webhook():
     return "OK"
 
 # Initialize the bot
-@app.before_first_request
 def initialize_bot():
     application.bot.set_webhook(WEBHOOK_URL)
+    print("Webhook set successfully.")
+
+# Initialize bot before running Flask app
+initialize_bot()
 
 # Start Flask app
 if __name__ == "__main__":
