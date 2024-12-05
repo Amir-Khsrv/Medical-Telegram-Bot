@@ -105,7 +105,7 @@ def webhook():
         print("Incoming update:", data)  # Log incoming data for debugging
         if data:
             update = Update.de_json(data, application.bot)  # Deserialize data
-            asyncio.create_task(application.process_update(update))    # Fixing the warning
+            await application.process_update(update)   # Fixing the warning
         return "OK", 200  # Return a successful HTTP status code
     except Exception as e:
         print("Error in webhook:", e)  # Log the error
