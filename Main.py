@@ -98,9 +98,10 @@ conv_handler = ConversationHandler(
 )
 application.add_handler(conv_handler)
 
-@app.route('/')
-def home():
-    return "Bot is running!"
+@app.get('/')
+async def home(request: Request):  # <-- Add 'request' argument here
+    # Your logic here
+    return {"message": "Bot Is Runniiiiiiiiiiiiiiing"}
 
 @app.route(f"/webhook/{TOKEN}", methods=['POST'])
 async def webhook(token: str, request: Request):
