@@ -2,3 +2,4 @@ python-telegram-bot==20.3
 Flask==2.3.2
 gunicorn==21.2.0
 setuptools>=58.0.0
+quart==0.17.0
