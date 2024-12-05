@@ -109,7 +109,14 @@ async def webhook(request: Request):
             await application.process_update(update)  # Process the update using the application context
 
         return {"status": "ok"}, 200  # Return a successful HTTP status code
+
+
     except Exception as e:
         print("Error in webhook:", e)  # Log the error
         return {"error": "Internal Server Error"}, 500  # Return error HTTP status code
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
 
