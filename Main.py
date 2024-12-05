@@ -79,7 +79,13 @@ app = FastAPI()
 
 WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
 
-application = Application.builder().token(TOKEN).build()
+def initialize_bot():
+    application = Application.builder().token(TOKEN).build()
+    application.bot.set_webhook(WEBHOOK_URL)
+    print("Webhook set successfully.")
+    return application
+
+application = initialize_bot()
 
 class UpdateData(BaseModel):
     update_id: int
@@ -114,9 +120,7 @@ async def webhook(request: Request):
         return "Internal Server Error", 500  # Return error HTTP status code
 
 # Initialize the bot
-def initialize_bot():
-    application.bot.set_webhook(WEBHOOK_URL)
-    print("Webhook set successfully.")
+
 
 # Initialize bot before running Flask app
 initialize_bot()
