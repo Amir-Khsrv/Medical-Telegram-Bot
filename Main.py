@@ -1,5 +1,6 @@
 import json
 import os
+import asyncio
 from flask import Flask, request
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
@@ -87,7 +88,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 # Flask app for webhook
 app = Flask(__name__)
 TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
-WEBHOOK_PATH = f"/webhook/7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
+WEBHOOK_PATH = f"/webhook/{TOKEN}"
 application = Application.builder().token(TOKEN).build()
 
 @app.route('/')
@@ -103,12 +104,16 @@ def webhook():
     return "OK"
 
 # Main function
-def main():
-    # Set the webhook URL
-    webhook_url = f"https://<your-render-url>.onrender.com/webhook"
-    application.bot.set_webhook(url=webhook_url)
+async def main():
+    # Set the webhook URL (replace '<your-render-url>' with your actual URL)
+    webhook_url = f"https://medical-telegram-bot-2.onrender.com.onrender.com/webhook/{TOKEN}"
+    await application.bot.set_webhook(url=webhook_url)
 
 if __name__ == '__main__':
-    main()
+    # Run the bot in the background
+    loop = asyncio.get_event_loop()
+    loop.create_task(main())
+
+    # Start Flask app (runs on port 5000)
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
