@@ -80,11 +80,10 @@ app = FastAPI()
 WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
 
 # Initialize the Application object and set the webhook
-def initialize_bot():
-    application = Application.builder().token(TOKEN).build()
-    return application
+application = Application.builder().token(TOKEN).build()
 
-application = initialize_bot()
+# Setting webhook inside the initialization function
+application.bot.set_webhook(WEBHOOK_URL)
 
 class UpdateData(BaseModel):
     update_id: int
@@ -120,7 +119,4 @@ async def webhook(request: Request):
         print("Error in webhook:", e)  # Log the error
         return {"error": "Internal Server Error"}, 500  # Return error HTTP status code
 
-# Start FastAPI app
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
