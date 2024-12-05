@@ -1,23 +1,11 @@
+from fastapi import FastAPI, Request
+from telegram import Update
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ConversationHandler, ContextTypes
 import json
 import os
-from fastapi import FastAPI, Request
-from pydantic import BaseModel
-from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    MessageHandler,
-    filters,
-    ConversationHandler,
-    ContextTypes,
-)
 
 # Define states for the conversation
 ASK_NAME, CHOOSE_SPECIALTY = range(2)
-TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
-
-# Initialize the Application object
-application = Application.builder().token(TOKEN).build()
 
 # Function to save user data
 def save_user_data(user_id, name, username, specialty):
@@ -77,10 +65,13 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text("Goodbye!")
     return ConversationHandler.END
 
-# FastAPI app and webhook handling
+# Initialize the FastAPI app
 app = FastAPI()
-
+TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
 WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
+
+# Initialize the Telegram bot application
+application = Application.builder().token(TOKEN).build()
 
 # Conversation handler
 conv_handler = ConversationHandler(
@@ -94,31 +85,31 @@ conv_handler = ConversationHandler(
 application.add_handler(conv_handler)
 
 @app.get('/')
-async def home(request: Request):
+async def home(request: Request):  # <-- Add 'request' argument here
     return {"message": "Bot Is Running"}
 
-# Webhook endpoint
 @app.post(f"/webhook/{TOKEN}")
-async def webhook(token: str, request: Request):
-    if token != TOKEN:
-        return {"error": "Invalid token"}
+async def webhook(request: Request):
+    try:
+        data = await request.json()  # Get JSON data
+        print("Incoming update:", data)  # Log incoming data for debugging
+        if data:
+            update = Update.de_json(data, application.bot)  # Deserialize data
+            await application.process_update(update)  # Process update with the application
+        return "OK", 200  # Return a successful HTTP status code
+    except Exception as e:
+        print("Error in webhook:", e)  # Log the error
+        return "Internal Server Error", 500  # Return error HTTP status code
 
-    data = await request.json()
-    update = Update.de_json(data, application.bot)
-    await application.process_update(update)
-    return {"status": "ok"}
+# Set the webhook
+def initialize_bot():
+    application.bot.set_webhook(WEBHOOK_URL)
+    print("Webhook set successfully.")
 
-# Set the webhook for the bot
-async def set_webhook():
-    webhook_url = f"https://your-domain.com/webhook/{TOKEN}"
-    application.bot.set_webhook(url=webhook_url)
+# Initialize bot before running FastAPI app
+initialize_bot()
 
+# Run the FastAPI app
 if __name__ == "__main__":
     import uvicorn
-    import asyncio
-
-    # Set the webhook before running the app
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(set_webhook())  # Initialize webhook
-
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
