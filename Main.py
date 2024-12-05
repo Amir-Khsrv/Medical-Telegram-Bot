@@ -1,6 +1,7 @@
 import json
 import os
-from flask import Flask, request
+from fastapi import FastAPI , Request
+from pydantic import BaseModel
 from daphne.server import Server
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
@@ -74,7 +75,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 # Flask app and Telegram bot application
-app = Flask(__name__)
+app = FastAPI()
 TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
 WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
 
@@ -83,7 +84,9 @@ application = (
     .token(TOKEN)
     .build()
 )
-
+class UpdateData(BaseModel):
+    update_id: int
+    message: dict
 # Conversation handler
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler('start', start)],
@@ -100,13 +103,13 @@ def home():
     return "Bot is running!"
 
 @app.route(f"/webhook/{TOKEN}", methods=['POST'])
-def webhook():
+async def webhook(token: str, request: Request):
     try:
-        data = request.get_json()  # Get JSON data
+        data = await.request.json()  # Get JSON data
         print("Incoming update:", data)  # Log incoming data for debugging
         if data:
             update = Update.de_json(data, application.bot)  # Deserialize data
-            asyncio.run(application.process_update(update))   # Fixing the warning
+            await application.process_update(update)    # Fixing the warning
         return "OK", 200  # Return a successful HTTP status code
     except Exception as e:
         print("Error in webhook:", e)  # Log the error
