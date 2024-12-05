@@ -2,7 +2,6 @@ import json
 import os
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
-from daphne.server import Server
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import (
     Application,
@@ -12,10 +11,11 @@ from telegram.ext import (
     ConversationHandler,
     ContextTypes,
 )
-import asyncio
+
 # Define states for the conversation
 ASK_NAME, CHOOSE_SPECIALTY = range(2)
 TOKEN = "7946706520:AAHxnfqdrH6Km7QP-AnM3xYwEcZzvKaCJN8"
+
 # Function to save user data
 def save_user_data(user_id, name, username, specialty):
     os.makedirs('data', exist_ok=True)
@@ -77,19 +77,23 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 # Flask app and Telegram bot application
 app = FastAPI()
 
+# Define the proper webhook URL without encoding the TOKEN part
 WEBHOOK_URL = f"https://medical-telegram-bot-2.onrender.com/webhook/{TOKEN}"
 
 def initialize_bot():
+    # Initialize the Application with the token
     application = Application.builder().token(TOKEN).build()
-    application.bot.set_webhook(WEBHOOK_URL)
+    application.bot.set_webhook(WEBHOOK_URL)  # Set the webhook
     print("Webhook set successfully.")
     return application
 
+# Initialize the bot only once
 application = initialize_bot()
 
 class UpdateData(BaseModel):
     update_id: int
     message: dict
+
 # Conversation handler
 conv_handler = ConversationHandler(
     entry_points=[CommandHandler('start', start)],
@@ -102,9 +106,8 @@ conv_handler = ConversationHandler(
 application.add_handler(conv_handler)
 
 @app.get('/')
-async def home(request: Request):  # <-- Add 'request' argument here
-    # Your logic here
-    return {"message": "Bot Is Runniiiiiiiiiiiiiiing"}
+async def home(request: Request):
+    return {"message": "Bot Is Running"}
 
 @app.post(f"/webhook/{TOKEN}")
 async def webhook(request: Request):
@@ -113,17 +116,13 @@ async def webhook(request: Request):
         print("Incoming update:", data)  # Log incoming data for debugging
         if data:
             update = Update.de_json(data, application.bot)  # Deserialize data
-            await application.process_update(update)    # Fixing the warning
-        return "OK", 200  # Return a successful HTTP status code
+            await application.process_update(update)  # Process update
+        return {"status": "ok"}, 200  # Return a successful HTTP status code
     except Exception as e:
         print("Error in webhook:", e)  # Log the error
-        return "Internal Server Error", 500  # Return error HTTP status code
-
-# Initialize the bot
-
-
-
+        return {"error": "Internal Server Error"}, 500  # Return error HTTP status code
 
 # Start Flask app
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
