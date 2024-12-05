@@ -105,7 +105,7 @@ def home():
 @app.route(f"/webhook/{TOKEN}", methods=['POST'])
 async def webhook(token: str, request: Request):
     try:
-        data = await.request.json()  # Get JSON data
+        data = await request.json()  # Get JSON data
         print("Incoming update:", data)  # Log incoming data for debugging
         if data:
             update = Update.de_json(data, application.bot)  # Deserialize data
