@@ -25,12 +25,14 @@ def save_user_data(user_id, name, username, specialty):
         os.makedirs('data', exist_ok=True)
         file_path = 'data/user_data.json'
 
-        try:
+        # Load existing data or create a new list
+        if os.path.exists(file_path):
             with open(file_path, 'r') as file:
                 users = json.load(file)
-        except FileNotFoundError:
+        else:
             users = []
 
+        # Append new user data
         users.append({
             "user_id": user_id,
             "name": name,
@@ -38,6 +40,7 @@ def save_user_data(user_id, name, username, specialty):
             "specialty": specialty
         })
 
+        # Save updated data back to the file
         with open(file_path, 'w') as file:
             json.dump(users, file, indent=4)
     except Exception as e:
@@ -98,9 +101,10 @@ app = Flask(__name__)
 def telegram_webhook():
     try:
         data = request.get_json()
-        update = Update.de_json(data, application.bot)
-        application.update_queue.put_nowait(update)
-        return jsonify({"ok": True})
+        if data:
+            update = Update.de_json(data, application.bot)
+            application.update_queue.put_nowait(update)
+            return jsonify({"ok": True})
     except Exception as e:
         logger.error(f"Error processing update: {e}")
         return jsonify({"ok": False, "error": str(e)}), 500
@@ -112,8 +116,13 @@ def home():
 # Set the webhook when the Flask app starts
 if __name__ == "__main__":
     from telegram import Bot
-    bot = Bot(TOKEN)
-    bot.delete_webhook()  # Cleanup old webhooks
-    bot.set_webhook(WEBHOOK_URL)  # Set new webhook
-    logger.info("Webhook set successfully.")
+
+    try:
+        bot = Bot(TOKEN)
+        bot.delete_webhook()  # Cleanup old webhooks
+        bot.set_webhook(WEBHOOK_URL)  # Set new webhook
+        logger.info("Webhook set successfully.")
+    except Exception as e:
+        logger.error(f"Error setting webhook: {e}")
+
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
