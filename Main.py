@@ -101,15 +101,7 @@ async def webhook(request: Request):
         print("Error in webhook:", e)  # Log the error
         return "Internal Server Error", 500  # Return error HTTP status code
 
-# Set the webhook
-def initialize_bot():
-    application.bot.set_webhook(WEBHOOK_URL)
-    print("Webhook set successfully.")
-
-# Initialize bot before running FastAPI app
-initialize_bot()
-
-# Run the FastAPI app
+# Set the webhook automatically when the application starts
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
